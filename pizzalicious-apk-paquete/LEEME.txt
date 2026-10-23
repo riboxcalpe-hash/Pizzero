@@ -1,0 +1,13 @@
+PIZZALICIOUS CALPE - paquete para generar el APK
+
+1. Crea una cuenta gratuita en github.com y un repositorio nuevo (privado vale).
+2. Sube TODO el contenido de esta carpeta al repositorio, incluida la carpeta oculta .github
+   (si el navegador no la sube, crea a mano el archivo .github/workflows/apk.yml con "Add file > Create new file" y pega su contenido).
+3. Entra en la pestaña Actions, elige "Build APK" y pulsa "Run workflow". Tarda unos 5-10 minutos.
+4. Cuando termine, abre la ejecucion y descarga "pizzalicious-apk" (es un zip con app-debug.apk).
+5. Pasa el APK al movil, abrelo y permite instalar apps de origen desconocido cuando te lo pida.
+
+Notas:
+- El ranking entre jugadores solo funciona en la version web con cuenta de claude.ai; en el APK mostrara un aviso.
+- La partida, el monedero y las mejoras se guardan en el propio movil.
+- Necesita internet solo para cargar la tipografia; sin ella usa una de respaldo.

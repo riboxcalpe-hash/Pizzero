@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pizzalicious Calpe: turno de noche</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Nunito:wght@700;800&display=swap">
+<style>
+:root{--wall:#2b5c4f;--tile:#357062;--wood:#9a6137;--wood2:#7d4b29;--tomato:#d23b24;--paper:#fff6e2;--ink:#2a1a10;--ok:#4caf50;--warn:#f0a020;--bad:#c62828;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--wall:#1d4036;--tile:#245247;--wood:#7a4a2a;--wood2:#5f3a21;--paper:#f1e3c2}}
+:root[data-theme="dark"]{--wall:#1d4036;--tile:#245247;--wood:#7a4a2a;--wood2:#5f3a21;--paper:#f1e3c2}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{height:100%;margin:0;background:var(--wood2);font-family:Nunito,system-ui,sans-serif;color:var(--ink);overflow:hidden}
+button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer}
+#app{height:100%;max-width:480px;margin:0 auto;display:flex;flex-direction:column}
+.hud{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--wood2);color:var(--paper)}
+#clk{font-family:"Bowlby One",Impact,sans-serif;font-size:21px;min-width:60px}
+#lv{font-weight:800;font-size:12px;background:var(--tomato);padding:2px 8px;border-radius:10px;white-space:nowrap}
+.dayb{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.35);overflow:hidden}
+.dayb i{display:block;height:100%;width:0;background:var(--warn)}
+#money{font-weight:800;font-size:15px;text-align:right;white-space:nowrap}#money small{font-size:11px;opacity:.8}
+.front{flex:0 0 32%;position:relative;background-image:repeating-linear-gradient(90deg,transparent 0 39px,rgba(255,255,255,.07) 39px 40px),repeating-linear-gradient(0deg,transparent 0 39px,rgba(255,255,255,.07) 39px 40px);background-color:var(--tile)}
+.sign{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:var(--tomato);color:#fff;font-family:"Bowlby One",Impact,sans-serif;font-size:13px;padding:3px 12px;border-radius:8px;box-shadow:0 2px 0 rgba(0,0,0,.35);white-space:nowrap}
+.spots{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);align-items:end;padding:0 6px 6px}
+.spot{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;padding-bottom:2px;border-radius:12px}
+.serving .spot[data-i]{cursor:pointer;animation:pulse 1s infinite}
+@keyframes pulse{50%{background:rgba(255,246,226,.18)}}
+.bub{background:var(--paper);border-radius:14px;padding:4px 7px;text-align:center;font-size:10.5px;line-height:1.2;position:relative;margin-bottom:8px;box-shadow:0 2px 0 rgba(0,0,0,.25);max-width:100%}
+.bub b{display:block;font-size:12.5px}
+.bub:after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--paper)}
+.face{font-size:54px;line-height:1}
+.pb{width:70%;height:7px;border-radius:4px;background:rgba(0,0,0,.4);overflow:hidden;margin-top:4px}
+.pb i{display:block;height:100%;width:100%;background:var(--ok)}
+.angry .face{animation:shake .25s infinite}
+@keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+#toast{position:absolute;left:50%;top:36px;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:6px 12px;border-radius:16px;font-size:13px;font-weight:800;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;z-index:3}
+#toast.on{opacity:1}
+.edge{height:14px;background:linear-gradient(var(--wood),var(--wood2));border-top:3px solid #c48a55}
+.prep{flex:1;min-height:0;background:var(--wood);background-image:repeating-linear-gradient(90deg,transparent 0 58px,rgba(0,0,0,.08) 58px 60px);padding:10px;display:flex;flex-direction:column;gap:8px}
+.top{display:grid;grid-template-columns:140px 1fr;gap:10px;flex:0 0 auto;height:210px}
+.boardw{display:flex;flex-direction:column;align-items:center;gap:6px}
+.board{width:140px;height:136px;border-radius:16px;background:#e8d3a8;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 4px #c9ae7c,0 3px 0 rgba(0,0,0,.3);font-size:13px;text-align:center;padding:6px}
+.acts{display:flex;gap:5px;width:100%}
+.acts button{flex:1;border:0;border-radius:12px;padding:9px 2px;font-weight:800;font-size:13px;background:var(--paper);box-shadow:0 3px 0 rgba(0,0,0,.3)}
+#bake{flex:2;background:var(--tomato);color:#fff}
+.oven{display:grid;grid-template-rows:repeat(3,1fr);gap:6px;background:#3a2a22;border-radius:14px;padding:8px;box-shadow:inset 0 0 0 3px #1f1511}
+.slot{display:grid;grid-template-columns:50px 1fr;grid-template-rows:1fr auto;column-gap:8px;align-items:center;background:#1f1511;border-radius:10px;padding:4px 8px;color:#f4e6cf;font-size:12px;font-weight:800}
+.slot.ready{box-shadow:0 0 0 2px var(--ok)}.slot.sel{box-shadow:0 0 0 3px #fff;background:#3b2a1d}
+.slot.burnt{box-shadow:0 0 0 2px var(--bad)}
+.slot .mini{grid-row:1/3;display:flex;justify-content:center}
+.ob{height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;align-self:end;margin-bottom:6px}
+.ob i{display:block;height:100%;width:0;background:var(--warn)}
+.slot.ready .ob i{background:var(--ok)}.slot.burnt .ob i{background:var(--bad)}
+.ings{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;overflow-y:auto;flex:1 1 auto;min-height:0;align-content:start;padding-bottom:4px}
+.ings button{border:0;border-radius:12px;background:var(--paper);padding:4px 0 3px;box-shadow:0 3px 0 rgba(0,0,0,.3);font-size:9.5px;line-height:1.1;text-align:center;font-weight:800;display:flex;flex-direction:column;align-items:center;min-height:46px}
+.ings button b{font-size:20px;line-height:1.1}
+.ings button.new{outline:3px solid var(--warn)}
+.ings button:active,.acts button:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.pz{position:relative;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle,#f6dfa8 0 68%,#d9a85a 69% 100%);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.pz .sa{position:absolute;inset:9%;border-radius:50%;background:var(--tomato)}
+.pz .ch{position:absolute;inset:13%;border-radius:50%;background:#f7c948;opacity:.92}
+.pz .tp{position:absolute;transform:translate(-50%,-50%);font-size:calc(var(--s)*.15);line-height:1}
+.pz.ready{filter:sepia(.35) saturate(1.3)}.pz.burnt{filter:brightness(.3) sepia(.6)}
+.ov{position:fixed;inset:0;background:rgba(20,10,5,.82);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9}
+.ov.off{display:none}
+.card{background:var(--paper);border-radius:20px;padding:20px;max-width:360px;width:100%;text-align:center;max-height:92vh;overflow:auto}
+.card h1{font-family:"Bowlby One",Impact,sans-serif;font-weight:400;font-size:26px;margin:0 0 10px;line-height:1.1}
+.card p{margin:6px 0;font-size:14px;line-height:1.4;text-align:left}
+.card .big{font-size:34px;text-align:center;margin:4px 0}
+.card button{margin-top:14px;border:0;border-radius:14px;background:var(--tomato);color:#fff;font-weight:800;font-size:18px;padding:12px 28px;box-shadow:0 4px 0 rgba(0,0,0,.3)}
+.card a{display:block;margin-top:12px;font-size:12px;text-decoration:underline;cursor:pointer}
+.sz{display:flex;align-items:center;justify-content:center;gap:4px;border-radius:8px;padding:2px 4px;margin:2px 0 3px;font-style:normal;font-weight:800;font-size:9.5px;background:#e8d3a8;white-space:nowrap}
+.sz.f{background:var(--tomato);color:#fff}
+.sz i{width:var(--d);height:var(--d);border-radius:50%;background:radial-gradient(#f4c95d 0 55%,#d9a85a 56%);flex:none}
+.acts #size.f{background:var(--tomato);color:#fff}
+#st{position:absolute;left:8px;top:34px;font-size:12px;z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.tabs{display:flex;gap:5px;width:100%}.tabs button{flex:1;border:0;border-radius:8px;padding:3px 0;font-weight:800;font-size:12px;background:rgba(255,255,255,.35);color:var(--ink)}.tabs button.on{background:var(--paper);box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.oven.two{grid-template-columns:1fr 1fr}.oven.two .slot{grid-template-columns:36px 1fr;font-size:10px;padding:3px 5px;column-gap:5px}
+.shop,.rl{display:flex;flex-direction:column;gap:8px;margin-top:8px;max-height:46vh;overflow-y:auto}
+.it,.rr{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(0,0,0,.07);border-radius:12px;padding:8px 10px;text-align:left;font-size:13px}
+.it small{font-size:11px}
+.card .it button{margin:0;padding:8px 10px;font-size:14px;white-space:nowrap}.card .it button.no{opacity:.5}
+.rr b{min-width:28px}.rr span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rr em{font-style:normal;font-weight:800;white-space:nowrap}.rr.me{background:rgba(210,59,36,.2)}
+.crew{display:none;justify-content:flex-end;align-items:center;gap:2px;font-size:24px;line-height:1}
+.crew:before{content:"Ayudantes";margin-right:auto;font-size:11px;font-weight:800;color:var(--paper)}
+@media (prefers-reduced-motion:no-preference){.crew span{display:inline-block;animation:bob 1s ease-in-out infinite}}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.fx{position:fixed;left:0;top:0;width:56px;height:56px;pointer-events:none;z-index:30;will-change:transform}
+.fx i{position:absolute;left:50%;top:-8px;transform:translateX(-50%);font-size:22px;font-style:normal;line-height:1}
+.fx.p{width:auto;height:auto;font-size:16px;line-height:1}
+.blks{max-height:52vh;overflow-y:auto;margin-top:8px}
+.blk .map{display:none;margin-top:4px}.blk.open .map{display:grid}
+.card .bh{display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;margin:6px 0 0;padding:10px 12px;font-size:14px;border-radius:12px;background:var(--ok);box-shadow:0 3px 0 rgba(0,0,0,.3);text-align:left}
+.card .bh.cur{background:var(--tomato)}.card .bh.lock{background:#8b8478}
+.bh span{font-size:12px;font-weight:700}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.card .tile{display:flex;flex-direction:column;align-items:center;gap:2px;margin:0;padding:12px 4px 8px;border-radius:16px;background:linear-gradient(160deg,#fff,#f2dfb4);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.25);font-size:13px}
+.tile b{font-size:32px;line-height:1.1}.tile span{font-weight:800}.tile i{font-style:normal;font-size:10px;letter-spacing:2px;color:var(--tomato)}
+.card .tile.on{outline:3px solid var(--tomato);outline-offset:2px;transform:translateY(-2px)}
+.det{margin-top:12px;background:rgba(0,0,0,.07);border-radius:14px;padding:10px 12px;text-align:left;min-height:96px}
+.det h3{margin:0 0 4px;font-size:16px}.det p{margin:4px 0;font-size:13px}.det .msg{font-weight:800;color:var(--tomato)}
+.det .row{display:flex;gap:8px}.card .det button{flex:1;margin:10px 0 0;padding:10px;font-size:15px}.card .det button.sec{background:var(--wood2)}.card .det button.no{opacity:.5}
+.c2{display:none;align-items:center;gap:8px;padding:3px 10px;background:linear-gradient(var(--wood2),#5f3a21);border-top:2px solid #c48a55;color:var(--paper);font-size:11px;font-weight:800}
+.wk{font-size:24px;line-height:1;flex:none}.wk.go{animation:wkgo 1.2s ease-in-out}
+@keyframes wkgo{0%,100%{transform:translateX(0)}30%{transform:translateX(40px)}70%{transform:translateX(-10px)}}
+.tk{display:flex;gap:5px;flex:1;overflow-x:auto;white-space:nowrap}
+.tk span{background:var(--paper);color:var(--ink);border-radius:8px;padding:2px 6px;flex:none}
+.c2{display:flex;align-items:stretch;gap:6px;padding:4px 8px;height:44px}
+.tray{flex:0 0 26%;display:flex;gap:3px;align-items:center;justify-content:center;background:rgba(0,0,0,.25);border-radius:8px;overflow:hidden;line-height:1}
+.lane{position:relative;flex:1;border-radius:8px;background:rgba(255,255,255,.08)}
+.emp{position:absolute;bottom:2px;font-size:22px;line-height:1;transform:translateX(-50%)}
+.emp small{position:absolute;left:50%;top:-12px;transform:translateX(-50%);font-size:12px}
+.mk{position:absolute;top:2px;transform:translateX(-50%);font-style:normal;font-size:9px;opacity:.6;font-weight:800}
+.hud button{border:0;border-radius:10px;background:rgba(255,255,255,.15);color:var(--paper);font-size:16px;padding:3px 9px}
+.map{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px;max-height:44vh;overflow-y:auto;padding:8px 6px}
+.card .map button{position:relative;width:100%;aspect-ratio:1;margin:0;padding:0;border-radius:50%;font-size:15px;box-shadow:0 3px 0 rgba(0,0,0,.3);background:var(--ok)}
+.card .map button.cur{background:var(--tomato)}.card .map button.lock{background:#8b8478;opacity:.7}
+.card .map button.on{outline:3px solid var(--ink);outline-offset:2px}
+.map u{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--paper);box-shadow:0 1px 0 rgba(0,0,0,.4);font-size:13px;line-height:22px;text-decoration:none}
+.card .stack button{display:block;width:100%;margin:10px 0 0}
+.card .stack button.sec{background:var(--wood2);font-size:16px}
+#mi{font-size:13px;min-height:58px}
+@media (prefers-reduced-motion:reduce){.serving .spot[data-i],.angry .face{animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+ <header class="hud"><div id="clk">19:00</div><div id="lv">Nv 1</div><div class="dayb"><i id="dayb"></i></div><div id="money"></div><button id="snd" aria-label="Sonido">🔊</button><button id="pause" aria-label="Pausa">⏸</button></header>
+ <section class="front"><div class="sign">PIZZALICIOUS CALPE</div><div id="st"></div><div class="spots" id="spots"></div><div id="toast"></div></section>
+ <div class="edge"></div><div class="c2" id="c2"><div class="tray" id="tray"></div><div class="lane" id="lane"></div></div>
+ <section class="prep"><div class="crew" id="crew"></div>
+  <div class="top">
+   <div class="boardw"><div class="board" id="board"></div><div class="tabs" id="tabs"></div>
+    <div class="acts"><button id="trash" aria-label="Tirar masa">🗑️</button><button id="size">30 cm</button><button id="bake">Hornear</button></div></div>
+   <div class="oven" id="oven"></div>
+  </div>
+  <div class="ings" id="ings"></div>
+ </section>
+</div>
+<div class="ov" id="ov"><div class="card" id="card"></div></div>
+<script>
+(()=>{
+const $=s=>document.querySelector(s),rnd=n=>Math.floor(Math.random()*n);
+const BI=[['dough','🫓','Masa'],['sauce','🥫','Tomate'],['oreg','🌿','Orégano'],['cheese','🧀','Queso']];
+const TP=[['bacon','🥓','Bacon'],['york','🍖','Jamón york'],['pep','🔴','Pepperoni'],['onion','🧅','Cebolla'],['pine','🍍','Piña'],['carb','🥛','S. carbonara'],['beef','🥩','Ternera'],['bbq','🔥','S. barbacoa'],['mush','🍄','Champiñones'],['jala','🫑','Jalapeños'],['garlic','🧄','Ajo'],['gambas','🦐','Gambas'],['cherry','🍒','Tomate cherry'],['eggr','🍳','Huevo roto'],['tuna','🐟','Atún'],['serr','🍗','Jamón serrano'],['parm','🟨','Parmesano'],['ruc','🥬','Rúcula'],['chick','🐔','Pollo'],['truf','⚫','Trufa'],['pimi','🟥','Pimiento rojo'],['alca','🥦','Alcachofas'],['tomr','🍅','Tomate rodajas'],['roq','🔵','Roquefort'],['cream','🤍','Queso crema'],['spin','🍃','Espinacas'],['kchick','🍢','Pollo kebab'],['ksauce','🥙','S. kebab'],['frik','🌭','Frikandela'],['cabra','🐐','Queso de cabra'],['eggc','🥚','Huevo cocido'],['corn','🌽','Maíz'],['salami','🟤','Salami'],['nuts','🌰','Nueces'],['miel','🍯','Miel'],['olive','🫒','Aceitunas negras'],['anch','🐠','Anchoas'],['alcap','🟢','Alcaparras'],['vegan','🌱','Queso vegano'],['oil','🔶','Aceite picante'],['extra','➕','Extra queso']];
+const PZS=[['Prosciutto',['york'],810,1690],['Hawaiana',['york','pine'],880,1810],['Rústica',['tuna','onion'],880,1810],['Italiana',['serr','parm','ruc'],950,1930],['Kebab',['kchick','beef','ksauce'],950,1930],['Carbonara',['bacon','onion','carb'],950,1930],['Cremosa',['cream','garlic','spin'],950,1930],['Carnívora',['bacon','york','pep','beef'],1020,2050],['Frikandela',['bacon','frik','cabra'],1020,2050],['Bombay',['bacon','pine','chick','carb'],1020,2050],['Barbacoa',['bacon','onion','bbq','beef'],1020,2050],['Coyote',['garlic','onion','jala','pep'],1020,2050],['Gambas',['cherry','gambas','garlic'],1020,2050],['Del Monte',['miel','nuts','cabra','tomr'],1020,2050],['Vegetal',['alca','onion','mush','pimi'],1020,2050],['Ranchera',['bacon','chick','bbq','carb','beef'],1090,2170],['Serranita',['tomr','serr','roq','chick','eggr'],1090,2170],['Correcaminos',['bacon','onion','mush','york','eggr'],1090,2170],['Suprema',['onion','mush','serr','parm','truf'],1090,2170],['Del Jefe',['garlic','eggc','jala','york','corn','pep'],1160,2290]].map(([n,t,m,f])=>({n,t,m,f}));
+const ING={};BI.concat(TP).forEach(([k,e,n])=>ING[k]=[e,n]);
+const ORDER=TP.map(x=>x[0]),BASE=['sauce','oreg','cheese'],BAKE=7,BURN=13,TOTAL=240;
+const fmt=c=>(c/100).toFixed(2).replace('.',',')+' €',tgt=n=>Math.min(150,40+n*6)*100;
+const D=new Date(),SUM=D.getMonth()==6||D.getMonth()==7,START=SUM?1170:1140,TUE=D.getDay()==2;
+const hh=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const cnt=l=>Math.min(ORDER.length,4+Math.floor((l-1)/3));
+let S,AC,tt,MUTE=false,LV=1,WAL=0,TOT=0,UP={ov:0,bs:0,sp:0,cn:0},DB=null,USR=null,UID=null;
+try{LV=+localStorage.getItem('pz-lv')||1;WAL=+localStorage.getItem('pz-w')||0;MUTE=localStorage.getItem('pz-mute')==='1';TOT=+localStorage.getItem('pz-tot')||0;UP=Object.assign(UP,JSON.parse(localStorage.getItem('pz-up')||'{}'))}catch(e){}
+let NOTE='';try{const td=Math.floor((Date.now()-D.getTimezoneOffset()*6e4)/864e5),la=localStorage.getItem('pz-day'),m=la===null?0:Math.max(0,td-(+la)-1);if(m){WAL-=m*10000;NOTE='Llevabas '+m+(m==1?' día':' días')+' sin jugar: −'+fmt(m*10000)+' del monedero.'}localStorage.setItem('pz-day',td);localStorage.setItem('pz-w',WAL)}catch(e){}
+function beep(f,d=.12){if(MUTE)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1500)}
+const POS=Array.from({length:12},(_,j)=>{const a=j*2.4,r=40*Math.sqrt((j+.6)/12.6);return[50+r*Math.cos(a),50+r*Math.sin(a)]});
+function pz(ing,st,s){let h=`<div class="pz ${st||''}" style="--s:${s}px">`;if(ing.includes('sauce'))h+='<i class="sa"></i>';if(ing.includes('cheese'))h+='<i class="ch"></i>';const tops=ing.filter(k=>!BASE.includes(k));tops.forEach((k,ki)=>POS.forEach((p,j)=>{if(j%tops.length==ki)h+=`<span class="tp" style="left:${p[0]}%;top:${p[1]}%">${ING[k][0]}</span>`}));return h+'</div>'}
+function reset(lv){S={lv,pat:Math.max(38,64-lv*1.5),unl:ORDER.slice(0,cnt(lv)),size:'M',t:0,money:0,served:0,lost:0,stars:5,pen:0,fail:false,cust:[null,null,null],next:1,bs:Array(1+UP.bs).fill(null),bi:0,oven:Array(1+UP.ov).fill(null),sel:null,run:false,last:0};Object.defineProperty(S,'board',{get(){return S.bs[S.bi]},set(v){S.bs[S.bi]=v},enumerable:true})}
+function cost(ing,f){const tp=ing.filter(k=>!BASE.includes(k)),s=tp.slice().sort().join(),p=PZS.find(p=>p.t.slice().sort().join()===s);return p?(f?p.f:p.m):(f?1570+120*tp.length:740+70*tp.length)}
+function pen(c,msg){S.money-=c;S.pen+=c;hud();toast(msg+' −'+fmt(c))}
+function drawStars(){$('#st').textContent='⭐'.repeat(S.stars)+'☆'.repeat(5-S.stars)}
+function drawBoard(){$('#tabs').innerHTML=S.bs.length>1?S.bs.map((b,i)=>`<button data-i="${i}" class="${i===S.bi?'on':''}">${i+1}${b?' 🫓':''}</button>`).join(''):'';$('#board').innerHTML=S.board?pz(S.board.ing,'',S.board.f?126:96):'Toca 🫓 Masa<br>para empezar';$('#size').textContent=S.size==='M'?'30 cm':'45 cm';$('#size').classList.toggle('f',S.size==='F')}
+function drawCust(){$('#spots').innerHTML=S.cust.map((c,i)=>c?`<div class="spot ${c.left<S.pat*.25?'angry':''}" data-i="${i}"><div class="bub">${c.taken?'':'<b>💬 Quiere pedir…</b><span style="display:none">'}<b>${c.r.n}</b><em class="sz ${c.r.fam?'f':''}"><i style="--d:${c.r.fam?'20px':'13px'}"></i>${c.r.fam?'FAMILIAR 45 cm':'MEDIANA 30 cm'}</em>${c.r.t.map(k=>ING[k][1]).join(', ')}${c.taken?'':'</span>'}</div><div class="face">${c.face}</div><div class="pb"><i></i></div></div>`:'<div class="spot"></div>').join('');$('#spots').classList.toggle('serving',S.sel!==null)}
+const stOf=(t,f)=>{const k=(f?1.35:1)*(1-.1*UP.sp);return t<BAKE*k?'bake':t<BURN*k?'ready':'burnt'};
+const LBL={bake:'Cocinando…',ready:'¡Lista! Al mostrador',burnt:'Quemada: tira'};
+function drawOven(){$('#oven').classList.toggle('two',S.oven.length>3);$('#oven').style.gridTemplateRows='repeat('+Math.max(2,Math.min(3,Math.ceil(S.oven.length/(S.oven.length>3?2:1))))+',1fr)';$('#oven').innerHTML=S.oven.map((o,i)=>o?`<div class="slot ${o.st} ${S.sel===i?'sel':''}" data-i="${i}"><div class="mini">${pz(o.ing,o.st==='bake'?'':o.st,S.oven.length>3?(o.f?40:32):(o.f?48:38))}</div><small>${LBL[o.st]} · ${o.f?45:30} cm</small><div class="ob"><i></i></div></div>`:`<div class="slot" data-i="${i}"><div class="mini"></div><small>Horno libre</small></div>`).join('');$('#spots').classList.toggle('serving',S.sel!==null)}
+function hud(){$('#clk').textContent=hh(START+Math.floor(S.t));$('#dayb').style.width=Math.min(100,S.t/TOTAL*100)+'%';$('#money').innerHTML=fmt(S.money)+'<small> / '+fmt(tgt(S.lv))+'</small>'}
+function pick(){const U=S.unl,ok=PZS.filter(p=>p.t.every(k=>U.includes(k)));let r;if(ok.length&&Math.random()<.65)r=ok[rnd(ok.length)];else{const k=Math.min(U.length,1+(S.lv>=2&&Math.random()<.5?1:0)+(S.lv>=8&&Math.random()<.4?1:0));r={n:'Margarita +',t:[...U].sort(()=>Math.random()-.5).slice(0,k)};r.m=740+70*k;r.f=1570+120*k}const fam=Math.random()<.25;return{n:r.n,t:r.t,fam,p:fam?r.f:r.m}}
+const FACES=['👨‍🦱','👩','🧔','👵','👦','👩‍🦰','🧑‍🎤','👴','👧'];
+function spawn(){const free=S.cust.map((c,i)=>c?-1:i).filter(i=>i>=0);if(!free.length){S.next=2;return}S.cust[free[rnd(free.length)]]={r:pick(),face:FACES[rnd(FACES.length)],left:S.pat};beep(520,.08);drawCust()}
+function add(k){if(!S.run)return;const b=S.board;if(k==='dough'){if(b)return toast('Ya hay una masa en la mesa');S.board={ing:[],f:S.size==='F'}}else{if(!b)return toast('Primero la masa');if(k!=='sauce'&&!b.ing.includes('sauce'))return toast('Primero el tomate');if(!BASE.includes(k)&&!BASE.every(x=>b.ing.includes(x)))return toast('Termina la base: tomate, orégano y queso');if(b.ing.includes(k))return toast('Ya lleva '+ING[k][1].toLowerCase());b.ing.push(k)}beep(380,.05);if(k==='dough')drawBoard();else anim(k,drawBoard)}
+function bake(){if(!S.run)return;if(!S.board)return toast('No hay pizza que hornear');const i=S.oven.indexOf(null);if(i<0)return toast('Horno lleno');S.oven[i]={ing:S.board.ing,t:0,f:S.board.f,st:'bake'};S.board=null;drawBoard();drawOven()}
+function ovenTap(i){const o=S.oven[i];if(!o)return;if(o.st==='bake')return toast('Aún está cruda');if(o.st==='burnt'){S.oven[i]=null;if(S.sel===i)S.sel=null;toast('A la basura 🗑️');return drawOven()}S.tray=S.tray||[];if(S.tray.length>=4)return toast('El mostrador está lleno');S.tray.push({ing:o.ing,f:o.f});S.oven[i]=null;drawOven();drawTray();beep(700,.06)}
+function serve(i){const c=S.cust[i];if(!c)return;if(S.sel===null)return toast('Saca una pizza lista del horno');const o=S.oven[S.sel];if([...BASE,...c.r.t].sort().join()!==[...o.ing].sort().join())return toast('Esos ingredientes no son los del pedido 🤨');if(c.r.fam!==o.f)return toast(c.r.fam?'Pidió la familiar (45 cm)':'Pidió la mediana (30 cm)');const m=1-.1*UP.sp,el=S.pat-c.left,pct=el<=5?10:Math.max(0,10-Math.ceil((el-5)/2)),tip=Math.round(c.r.p*pct/100),tot=Math.round((c.r.p+tip)*m);S.money+=tot;S.served++;S.oven[S.sel]=null;S.sel=null;S.cust[i]=null;beep(660,.08);setTimeout(()=>beep(880,.1),90);toast('+'+fmt(tot)+' (propina '+pct+'%'+(UP.sp?', −'+UP.sp*10+'% de sueldo de ayudantes':'')+')');drawOven();drawCust();hud()}
+function tick(now){if(!S.run)return;const dt=Math.min(.1,(now-S.last)/1000);S.last=now;S.t+=dt;
+ staff(dt);S.at=(S.at||0)+dt;if(S.at>=.8){S.at=0;auto()}S.next-=dt;if(S.next<=0&&S.t<TOTAL-15){spawn();const rush=S.t>80&&S.t<170;S.next=(rush?8:14)-Math.min(4,S.lv*.25)+Math.random()*3}
+ S.cust.forEach((c,i)=>{if(!c)return;c.left-=dt;if(c.left<=0){S.lost++;S.stars--;S.cust[i]=null;drawCust();drawStars();toast('Se fue un cliente: −1 ⭐');if(S.stars<3)S.fail=true;return}const sp=$(`#spots .spot[data-i="${i}"]`);if(sp){const b=sp.querySelector('.pb i');b.style.width=c.left/S.pat*100+'%';b.style.background=c.left<S.pat*.25?'var(--bad)':c.left<S.pat*.55?'var(--warn)':'var(--ok)';if(c.left<S.pat*.25)sp.classList.add('angry')}});
+ S.oven.forEach((o,i)=>{if(!o)return;o.t+=dt;const st=stOf(o.t,o.f),k=(o.f?1.35:1)*(1-.1*UP.sp);if(st!==o.st){o.st=st;if(st==='ready')beep(900,.15);if(st==='burnt'){beep(200,.3);pen(cost(o.ing,o.f),'Pizza quemada 🔥');if(S.sel===i)S.sel=null}drawOven()}const b=$(`#oven .slot[data-i="${i}"] .ob i`);if(b)b.style.width=(st==='bake'?o.t/(BAKE*k):st==='ready'?1-(o.t-BAKE*k)/((BURN-BAKE)*k):1)*100+'%'});
+ hud();if(S.fail||S.t>=TOTAL)return end();S.raf=requestAnimationFrame(tick)}
+function end(){S.run=false;const L=S.lv,pass=S.money>=tgt(L)&&S.stars>=3;const gain=S.money,vis=pass&&L%3==0&&cnt(L+1)>cnt(L);WAL+=gain;TOT+=gain;const tax=vis&&WAL>0?Math.round(WAL*.3):0;WAL-=tax;TOT-=tax;let extra='';
+ if(pass){LV=Math.max(LV,L+1);try{localStorage.setItem('pz-lv',LV)}catch(e){}if(L%3==0&&cnt(L+1)>cnt(L)){const k=ORDER[cnt(L+1)-1],u=ORDER.slice(0,cnt(L+1)),np=PZS.filter(p=>p.t.includes(k)&&p.t.every(x=>u.includes(x))).map(p=>p.n);extra=`<p><b>🔓 Ingrediente nuevo:</b> ${ING[k][0]} ${ING[k][1]}${np.length?'<br><b>Pizzas nuevas en la carta:</b> '+np.join(', '):''}</p>`}}
+ sv();pub();card(`<h1>${pass?'¡Nivel '+L+' superado!':'Nivel '+L+' no superado'}</h1><div class="big">${'⭐'.repeat(S.stars)+'☆'.repeat(5-S.stars)}</div><p>${S.stars<3?'Menos de 3 estrellas: nivel fallido.':S.money<tgt(L)?'No llegaste al objetivo de caja.':'¡Objetivo cumplido con 3 estrellas o más!'}</p><p><b>Caja:</b> ${fmt(S.money)} (objetivo ${fmt(tgt(L))})</p><p><b>Pizzas servidas:</b> ${S.served}</p><p><b>Clientes que se fueron:</b> ${S.lost}</p><p><b>Pérdidas por quemadas o tiradas:</b> ${fmt(S.pen)}</p><p><b>Monedero:</b> ${gain<0?'':'+'}${fmt(gain)} (total ${fmt(WAL)})</p>${tax?`<p>🏛️ <b>Visita de Hacienda:</b> −${fmt(tax)} (30% de todo el monedero)</p>`:''}${extra}<button id="go">${pass?'Nivel '+(L+1):'Repetir nivel'}</button><a id="mp">🗺️ Mapa de niveles</a><a id="sh">🛒 Tienda (${fmt(WAL)})</a><a id="rk">🏆 Ranking</a>`,()=>start(pass?L+1:L));$('#mp').onclick=()=>mapView();$('#sh').onclick=()=>shopView();$('#rk').onclick=()=>rankView()}
+function card(h,fn){$('#card').innerHTML=h;$('#ov').classList.remove('off');$('#go').onclick=fn}
+function start(lv){NOTE='';reset(lv);$('#ov').classList.add('off');beep(500,.1);const last=lv>1&&(lv-1)%3==0?S.unl[S.unl.length-1]:null;$('#ings').innerHTML=BI.map(x=>x[0]).concat(S.unl).map(k=>`<button data-k="${k}" class="${k===last?'new':''}"><b>${ING[k][0]}</b>${ING[k][1]}</button>`).join('');$('#lv').textContent='Nv '+lv;drawBoard();drawCust();drawOven();drawStars();drawCrew();drawC2();hud();S.run=true;S.last=performance.now();S.raf=requestAnimationFrame(tick)}
+function intro(){card(`<h1>🍕 Pizzalicious Calpe</h1><p><b>Horario ${SUM?'de verano (julio y agosto)':'de invierno'}:</b> ${hh(START)} a ${hh(START+240)}. Martes cerrado.${TUE?' Hoy es martes, así que es turno de práctica.':''}</p><p>Cada turno son cuatro horas de trabajo en 4 minutos: un segundo es un minuto. Empiezas con 5 ⭐ y pierdes una cada vez que un cliente se va sin su pedido: con menos de 3 ⭐ pierdes el nivel. Pizza quemada: pierdes lo que cuesta. Pizza tirada: pierdes la mitad de la base. Propina: 10% si sirves en 5 s o menos, 9% hasta 7 s, y 1% menos por cada 2 s más. Cada día sin jugar se descuentan 100 € y el monedero puede quedar en negativo. Al desbloquear un ingrediente, Hacienda se lleva el 30% de todo tu monedero. Llega al objetivo de caja para pasar de nivel.</p><p>Masa, tomate, orégano, queso y los ingredientes del pedido. Hornea, saca la pizza lista (ojo con el tamaño: 30 o 45 cm) y déjala en el mostrador: tu empleado la entrega. Él también toma los pedidos.</p>${NOTE?'<p>💸 '+NOTE+'</p>':''}<p><b>Nivel ${LV}:</b> ${cnt(LV)} ingredientes en la carta. Cada 3 niveles se desbloquea uno nuevo.</p><button id="go">Empezar nivel ${LV}</button><a id="mp">🗺️ Mapa de niveles</a><a id="sh">🛒 Tienda (${fmt(WAL)})</a><a id="rk">🏆 Ranking</a><a id="sn">${MUTE?'🔇 Sonido: silenciado':'🔊 Sonido: activado'}</a>${LV>1?'<a id="rst">Empezar de cero</a>':''}`,()=>start(LV));$('#mp').onclick=()=>mapView();$('#sh').onclick=()=>shopView();$('#rk').onclick=()=>rankView();$('#sn').onclick=()=>{snd();intro()};const r=$('#rst');if(r)r.onclick=()=>{LV=1;WAL=0;TOT=0;UP={ov:0,bs:0,sp:0,cn:0};sv();pub();intro()}}
+function unl(L){if(L<2||(L-1)%3||cnt(L)==cnt(L-1))return null;const k=ORDER[cnt(L)-1],u=ORDER.slice(0,cnt(L));return{k,np:PZS.filter(p=>p.t.includes(k)&&p.t.every(x=>u.includes(x))).map(p=>p.n)}}
+function mapView(){const blk=b=>{const rows=[];for(let r=0;r<3;r++){const a=[1,2,3,4,5].map(i=>b*15+r*5+i);rows.push(r%2?a.reverse():a)}const f=b*15+1,e=b*15+15,done=Math.max(0,Math.min(15,LV-f)),em=rows.flat().map(L=>unl(L)).filter(Boolean).map(u=>ING[u.k][0]).join(''),op=LV>=f&&LV<=e;return `<div class="blk${op?' open':''}"><button class="bh ${op?'cur':LV>e?'':'lock'}">${LV>e?'✓':LV<f?'🔒':'▶'} Niveles ${f}–${e} <span>${done}/15 ${em}</span></button><div class="map">${rows.flat().map(L=>{const u=unl(L);return `<button data-l="${L}" class="${L<LV?'':L==LV?'cur':'lock'}">${L}${u?`<u>${ING[u.k][0]}</u>`:''}</button>`}).join('')}</div></div>`};
+ card(`<h1>🗺️ Mapa de niveles</h1><div class="blks">${Array.from({length:8},(_,b)=>blk(b)).join('')}</div><p id="mi"></p><div class="stack"><button id="go"></button><button class="sec" id="bk">Volver</button></div>`);
+ const go=$('#go'),mi=$('#mi');let cur=LV;
+ const sel=L=>{cur=L;const u=unl(L);document.querySelectorAll('.map button').forEach(b=>b.classList.toggle('on',+b.dataset.l==L));mi.innerHTML=`<b>Nivel ${L}</b>: objetivo ${fmt(tgt(L))}, ${cnt(L)} ingredientes.${u?`<br>🔓 Ingrediente nuevo: ${ING[u.k][0]} ${ING[u.k][1]}${u.np.length?'<br>Pizzas nuevas: '+u.np.join(', '):''}`:''}${L>LV?'<br>Bloqueado: supera antes el nivel '+LV+'.':''}`;go.textContent=L>LV?'🔒 Bloqueado':'Jugar nivel '+L;go.disabled=L>LV;go.style.opacity=L>LV?.5:1};
+ document.querySelectorAll('.map button').forEach(b=>b.onclick=()=>sel(+b.dataset.l));document.querySelectorAll('.bh').forEach(h=>h.onclick=()=>{const p=h.parentNode,o=p.classList.contains('open');document.querySelectorAll('.blk').forEach(x=>x.classList.remove('open'));if(!o)p.classList.add('open')});go.onclick=()=>start(cur);$('#bk').onclick=intro;sel(LV);const c=$('.map .cur');if(c)c.scrollIntoView({block:'center'})}
+function pause(){if(!S||!S.run)return;S.run=false;cancelAnimationFrame(S.raf);card(`<h1>⏸ Pausa</h1><p style="text-align:center">Nivel ${S.lv} · ${hh(START+Math.floor(S.t))}</p><div class="stack"><button id="go">▶ Reanudar</button><button class="sec" id="b2">↺ Volver a empezar</button><button class="sec" id="b3">🏠 Ir al inicio</button></div>`,resume);$('#b2').onclick=()=>start(S.lv);$('#b3').onclick=intro}
+function resume(){$('#ov').classList.add('off');S.run=true;S.last=performance.now();S.raf=requestAnimationFrame(tick)}
+function snd(){MUTE=!MUTE;try{localStorage.setItem('pz-mute',MUTE?1:0)}catch(e){}$('#snd').textContent=MUTE?'🔇':'🔊'}
+$('#snd').onclick=snd;$('#snd').textContent=MUTE?'🔇':'🔊';$('#pause').onclick=pause;document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+function sv(){try{localStorage.setItem('pz-lv',LV);localStorage.setItem('pz-w',WAL);localStorage.setItem('pz-tot',TOT);localStorage.setItem('pz-up',JSON.stringify(UP))}catch(e){}pub()}
+async function pub(){if(!DB||!UID)return;try{await DB.doc('ranking/'+UID).set({lv:LV,w:WAL,t:Date.now()})}catch(e){}}
+const SH=[['ov','🔥 Más hornos','hornos',[1500000,1500000,1500000,1500000],l=>(2+l)+' hornos'],['bs','🫓 Más bases','mesas de preparación',[280000,280000],l=>(1+l)+' mesas'],['sp','👨‍🍳 Ayudantes (cocinar más rápido)','cocción',[240000,240000,240000,240000,240000],l=>l+(l==1?' ayudante':' ayudantes')+': tiempo −'+l*10+'%, ganancias −'+l*10+'%'+(l?' · '+['','coloca la masa','pone el tomate','pone el queso','pone el orégano','elige el tamaño'][l]:'')]];
+function shopViewOld(msg){card(`<h1>🛒 Tienda</h1><p style="text-align:center"><b>Monedero:</b> ${fmt(WAL)}</p><div class="shop">${SH.map(([k,n,d,c,f])=>{const l=UP[k],mx=c.length;return `<div class="it"><div><b>${n}</b><br><small>${d}: ${f(l)}${l<mx?' → '+f(l+1):' (máximo)'}</small></div>${k==='sp'?`<div><button data-k="sp" data-d="-1" class="${l&&WAL>=120000?'':'no'}">− ${fmt(120000)}</button> ${l<mx?`<button data-k="sp" data-d="1" class="${WAL<c[l]?'no':''}">+ ${fmt(c[l])}</button>`:'<span>✓</span>'}</div>`:l<mx?`<button data-k="${k}" class="${WAL<c[l]?'no':''}">${fmt(c[l])}</button>`:'<span>✓</span>'}</div>`}).join('')}</div><p style="text-align:center;font-size:13px">${msg||'Las mejoras se aplican desde el próximo nivel.'}</p><div class="stack"><button id="go">Volver</button></div>`,intro);document.querySelectorAll('.shop button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(k==='sp'){const d=+b.dataset.d;if(d<0){if(!UP.sp)return;if(WAL<120000)return shopView('Despedir cuesta '+fmt(120000)+' y te faltan '+fmt(120000-WAL));WAL-=120000;UP.sp--;sv();return shopView('Ayudante despedido: −'+fmt(120000))}if(UP.sp>=5)return;const c5=SH[2][3][UP.sp];if(WAL<c5)return shopView('Te faltan '+fmt(c5-WAL));WAL-=c5;UP.sp++;sv();return shopView('¡Comprado!')}const c=SH.find(x=>x[0]===k)[3][UP[k]];if(WAL<c)return shopView('Te faltan '+fmt(c-WAL));WAL-=c;UP[k]++;sv();shopView('¡Comprado!')})}
+async function rankView(){card(`<h1>🏆 Ranking</h1><p style="text-align:center;font-size:13px">Ordenado por el dinero que tienes en el monedero</p><div id="rl" class="rl">Cargando…</div><div class="stack"><button id="go">Volver</button></div>`,intro);const L=$('#rl');if(!DB){L.textContent='El ranking solo funciona al abrir el juego con tu cuenta de claude.ai.';return}try{await pub();const q=await DB.collection('ranking').orderBy('w','desc').limit(50).get();const rows=q.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>b.w-a.w);const ps=USR?await USR.profiles(rows.map(r=>r.id)):{};L.textContent='';if(!rows.length){L.textContent='Aún no hay jugadores.';return}rows.forEach((r,i)=>{const li=document.createElement('div');li.className='rr'+(r.id===UID?' me':'');const a=document.createElement('b');a.textContent=i<3?['🥇','🥈','🥉'][i]:(i+1)+'.';const n=document.createElement('span');n.textContent=((ps[r.id]&&ps[r.id].name)||'Jugador')+(r.id===UID?' (tú)':'');const s=document.createElement('em');s.textContent=fmt(r.w)+' · Nv '+r.lv;li.append(a,n,s);L.append(li)})}catch(e){L.textContent='No se pudo cargar el ranking.'}}
+function drawCrew(){const c=$('#crew');c.style.display=UP.sp?'flex':'none';c.innerHTML=['👨‍🍳','👩‍🍳','🧑‍🍳','👨‍🍳','👩‍🍳'].slice(0,UP.sp).map((e,i)=>`<span style="animation-delay:${i*.2}s">${e}</span>`).join('')}
+const LADLE='<svg viewBox="0 0 56 56" width="56" height="56"><line x1="46" y1="8" x2="22" y2="34" stroke="#8d8d8d" stroke-width="5" stroke-linecap="round"/><circle cx="16" cy="40" r="12" fill="#b8b8b8" stroke="#6f6f6f" stroke-width="2"/><ellipse cx="16" cy="39" rx="9" ry="8" fill="#d23b24"/></svg>';
+const GLOVE='<svg viewBox="0 0 56 56" width="56" height="56"><g fill="#fff" stroke="#9aa0a6" stroke-width="2" stroke-linejoin="round"><rect x="14" y="26" width="28" height="20" rx="9"/><rect x="14" y="10" width="6" height="22" rx="3"/><rect x="21" y="6" width="6" height="26" rx="3"/><rect x="28" y="7" width="6" height="25" rx="3"/><rect x="35" y="11" width="6" height="21" rx="3"/><path d="M14 36 L6 28 Q4 23 9 22 Q12 22 14 27Z"/><rect x="13" y="44" width="30" height="8" rx="3"/></g></svg>';
+const T=(x,y,r,s,o,off)=>({transform:`translate(${x-28}px,${y-28}px) rotate(${r}deg) scale(${s})`,opacity:o,offset:off});
+function anim(k,done){const btn=document.querySelector('#ings button[data-k="'+k+'"]'),bd=$('#board');if(!btn||!bd||matchMedia('(prefers-reduced-motion:reduce)').matches){done();return}
+ const a=btn.getBoundingClientRect(),b=bd.getBoundingClientRect(),sx=a.left+a.width/2,sy=a.top+a.height/2,ex=b.left+b.width/2,ey=b.top+b.height/2,el=document.createElement('div'),sau=k==='sauce',D=sau?650:600;
+ el.className='fx';el.innerHTML=sau?LADLE:GLOVE+'<i>'+ING[k][0]+'</i>';document.body.append(el);
+ el.animate(sau?[T(sx+12,sy-52,0,.4,0,0),T(sx+12,sy-12,0,1,1,.22),T(sx+12,sy-12,0,1,1,.32),T(ex+12,ey-30,-10,1,1,.7),T(ex+12,ey-26,-55,1,1,.82),T(ex+12,ey-26,-55,1,0,1)]:[T(sx,sy-40,0,.4,0,0),T(sx,sy-18,0,1,1,.2),T(ex,ey-40,0,1,1,.6),T(ex,ey-36,180,1,1,.75),T(ex,ey-36,180,1,0,1)],{duration:D,easing:'ease-in-out',fill:'forwards'});
+ const i=el.querySelector('i');if(i)i.animate([{opacity:1},{opacity:1,offset:.6},{opacity:0}],{duration:D,fill:'forwards'});
+ setTimeout(()=>{done();if(sau)return;for(let n=0;n<5;n++){const p=document.createElement('div');p.className='fx p';p.textContent=ING[k][0];document.body.append(p);const r=()=>Math.random()*50-25;p.animate([{transform:`translate(${ex-8+r()}px,${ey-34}px) scale(1)`,opacity:1},{transform:`translate(${ex-8+r()}px,${ey-8+r()/2}px) rotate(${r()*6}deg) scale(.8)`,opacity:.3}],{duration:320,easing:'ease-in',fill:'forwards'});setTimeout(()=>p.remove(),340)}},D*(sau?.8:.68));
+ setTimeout(()=>el.remove(),D+30)}
+const ST=[['sauce',2],['cheese',3],['oreg',4]];
+function auto(){if(!S.run||!UP.sp)return;const cs=S.cust.filter(Boolean);if(!cs.length)return;
+ if(UP.sp>=5){const u=cs.reduce((a,c)=>c.left<a.left?c:a),sz=u.r.fam?'F':'M';if(S.size!==sz){S.size=sz;const b=S.board;if(b&&!b.ing.length)b.f=u.r.fam;drawBoard()}}
+ const n=S.bs.length;for(let j=0;j<n;j++){const i=(S.bi+j)%n,b=S.bs[i];if(!b)continue;for(const [k,l] of ST){if(UP.sp>=l&&!b.ing.includes(k)&&(k==='sauce'||b.ing.includes('sauce'))){b.ing.push(k);anim(k,drawBoard);return}}}
+ const wip=S.bs.filter(Boolean).length+S.oven.filter(o=>o&&o.st!=='burnt').length;
+ if(wip<cs.length){const i=S.bs.indexOf(null);if(i>=0){S.bs[i]={ing:[],f:S.size==='F'};drawBoard();toast('🧑‍🍳 Un ayudante coloca la base')}}}
+const AUT=['','coloca la masa','pone el tomate','pone el queso','pone el orégano','elige el tamaño del pedido'];
+const SH2=[{k:'ov',e:'🔥',n:'Hornos',d:'Cada horno extra te deja cocer una pizza más a la vez. Empiezas con 1 y puedes tener hasta 6.',max:5,c:800000,f:l=>(1+l)+(l?' hornos':' horno')},{k:'bs',e:'🫓',n:'Mesas',d:'Otra mesa de preparación para ir montando varias pizzas a la vez. Cambias de mesa con las pestañas.',max:2,c:280000,f:l=>(1+l)+' mesas'},{k:'sp',e:'🧑‍🍳',n:'Ayudantes',d:'Cada ayudante acelera el horno un 10% pero cobra un sueldo: pierdes un 10% de tus ganancias. Además automatiza un paso de la pizza.',max:5,c:240000,f:l=>l+(l==1?' ayudante':' ayudantes')+' · tiempo −'+l*10+'% · ganancias −'+l*10+'%'}];
+SH2.push({k:'cn',e:'🧑‍💼',n:'Empleado',d:'Tu empleado del segundo mostrador toma los pedidos y lleva a los clientes las pizzas que dejas hechas. Cada mejora lo hace más rápido o suma otro empleado, hasta tres.',max:6,c:240000,f:l=>(1+(l>=2)+(l>=5))+(l>=2?' empleados':' empleado')+' · nivel '+l+'/6'});
+function shopView(msg,sk){const s=SH2.find(x=>x.k===sk),l=s?UP[s.k]:0;
+ card(`<h1>🛒 Tienda</h1><p style="text-align:center;font-size:15px"><b>Monedero:</b> ${fmt(WAL)}</p><div class="tiles">${SH2.map(t=>`<button class="tile ${t.k===sk?'on':''}" data-k="${t.k}"><b>${t.e}</b><span>${t.n}</span><i>${'●'.repeat(UP[t.k])+'○'.repeat(t.max-UP[t.k])}</i></button>`).join('')}</div><div class="det">${s?`<h3>${s.e} ${s.n}</h3><p>${s.d}</p><p><b>Ahora:</b> ${s.f(l)}</p>${l<s.max?`<p><b>Siguiente:</b> ${s.f(l+1)}${s.k==='sp'?' · '+AUT[l+1]:s.k==='cn'?' · '+STF[l+1]:''}</p>`:'<p>Nivel máximo ✓</p>'}<div class="row">${l<s.max?`<button id="buy" class="${WAL<s.c?'no':''}">Mejorar · ${fmt(s.c)}</button>`:''}${s.k==='sp'&&l?`<button id="fire" class="sec ${WAL<120000?'no':''}">Despedir · ${fmt(120000)}</button>`:''}</div>`:'<p>Toca una mejora para ver qué hace.</p>'}${msg?`<p class="msg">${msg}</p>`:''}</div><div class="stack"><button id="go" class="sec">Volver</button></div>`,intro);
+ document.querySelectorAll('.tile').forEach(b=>b.onclick=()=>shopView('',b.dataset.k));
+ const by=$('#buy');if(by)by.onclick=()=>{if(WAL<s.c)return shopView('Te faltan '+fmt(s.c-WAL),s.k);WAL-=s.c;UP[s.k]++;sv();shopView('¡Mejora comprada!',s.k)};
+ const fr=$('#fire');if(fr)fr.onclick=()=>{if(WAL<120000)return shopView('Despedir cuesta '+fmt(120000)+' y te faltan '+fmt(120000-WAL),s.k);WAL-=120000;UP.sp--;sv();shopView('Ayudante despedido: −'+fmt(120000),s.k)}}
+function drawC2(){$('#c2').style.display='flex';S.tray=[];S.em=[];drawTray()}
+function fly(i,j,ms){const a=document.querySelector('#oven .slot[data-i="'+i+'"]'),b=document.querySelector('#spots .spot[data-i="'+j+'"]');if(!a||!b||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const r=a.getBoundingClientRect(),q=b.getBoundingClientRect(),p=document.createElement('div'),ax=r.left+r.width/2-14,ay=r.top+r.height/2-14,bx=q.left+q.width/2-14,by=q.top+q.height/2-14;p.className='fx p';p.style.fontSize='28px';p.textContent='🍕';document.body.append(p);p.animate([{transform:`translate(${ax}px,${ay}px)`},{transform:`translate(${(ax+bx)/2}px,${Math.min(ay,by)-30}px)`,offset:.5},{transform:`translate(${bx}px,${by}px)`,opacity:.9}],{duration:ms,easing:'ease-in-out',fill:'forwards'});setTimeout(()=>p.remove(),ms+30)}
+function worker(dt){S.wt=(S.wt||0)+dt;S.dv=S.dv||[];S.dv.forEach(d=>d.t-=dt);const dn=S.dv.filter(d=>d.t<=0);S.dv=S.dv.filter(d=>d.t>0);
+ dn.forEach(d=>{if(S.oven[d.i]===d.o&&S.cust[d.j]===d.c){const keep=S.sel;S.sel=d.i;serve(d.j);if(keep!==null&&keep!==d.i&&S.oven[keep]&&S.oven[keep].st==='ready'){S.sel=keep;drawOven();drawCust()}}});
+ if(S.wt<.5)return;S.wt=0;
+ const cs=S.cust.filter(Boolean).sort((a,b)=>a.left-b.left),txt=c=>c.r.n+' '+c.r.t.map(k=>ING[k][0]).join('')+' '+(c.r.fam?'45':'30'),h=cs.map(txt).join('|');
+ if(h!==S.tkh){S.tkh=h;$('#tk').innerHTML=cs.length?cs.map(c=>'<span>'+txt(c)+'</span>').join(''):'Sin pedidos'}
+ S.oven.forEach((o,i)=>{if(!o||o.st!=='ready'||S.sel===i||S.dv.some(d=>d.o===o))return;let j=-1;S.cust.forEach((c,x)=>{if(c&&c.r.fam===o.f&&[...BASE,...c.r.t].sort().join()===[...o.ing].sort().join()&&!S.dv.some(d=>d.c===c)&&(j<0||c.left<S.cust[j].left))j=x});if(j<0)return;S.dv.push({i,j,o,c:S.cust[j],t:1.2});fly(i,j,1200);const w=$('#wk');w.classList.remove('go');void w.offsetWidth;w.classList.add('go')})}
+const STF=['','El 1.º empleado va más rápido y toma pedidos antes','Contratas al 2.º empleado','El 2.º empleado va más rápido','Los empleados 1 y 2 mejoran de nuevo','Contratas al 3.º empleado','Los 3 empleados, súper rápidos'];
+const SPD=[.25,.4,.5,.85],TAKE=[3,2,1.5,.8],EF=['🧑‍💼','👩‍💼','👨‍💼'];
+const tier=i=>{const L=UP.cn||0;return L>=6?3:i==0?(L>=1)+(L>=4):i==1?(L>=3)+(L>=4):0};
+const cx=j=>.2+.3*j,same=(c,p)=>c.r.fam===p.f&&[...BASE,...c.r.t].sort().join()===[...p.ing].sort().join();
+function drawTray(){$('#tray').innerHTML=(S.tray||[]).map(p=>'<span style="font-size:'+(p.f?24:17)+'px">🍕</span>').join('')||'<span style="font-size:11px;font-weight:800;opacity:.6">Mostrador</span>'}
+function drawEmps(){$('#lane').innerHTML=[.2,.5,.8].map((x,i)=>'<i class="mk" style="left:'+x*100+'%">'+(i+1)+'</i>').join('')+S.em.map(e=>'<span class="emp" style="left:'+e.x*100+'%">'+e.f+(e.carry?'<small>🍕</small>':e.st==='take'?'<small>📝</small>':'')+'</span>').join('')}
+function pay(j){const c=S.cust[j],m=1-.1*UP.sp,el=S.pat-c.left,pct=el<=5?10:Math.max(0,10-Math.ceil((el-5)/2)),tip=Math.round(c.r.p*pct/100),tot=Math.round((c.r.p+tip)*m);S.money+=tot;S.served++;S.cust[j]=null;beep(660,.08);setTimeout(()=>beep(880,.1),90);toast('+'+fmt(tot)+' (propina '+pct+'%'+(UP.sp?', −'+UP.sp*10+'% de sueldo de ayudantes':'')+')');drawCust();hud()}
+function staff(dt){const L=UP.cn||0,n=1+(L>=2)+(L>=5);S.em=S.em||[];S.tray=S.tray||[];while(S.em.length<n)S.em.push({x:.05,st:'idle',f:EF[S.em.length]});
+ S.em.forEach((e,i)=>{const k=tier(i);
+  if(e.task&&S.cust.indexOf(e.task.c)<0){if(e.carry)S.tray.push(e.carry);e.carry=null;if(e.task.p)e.task.p.rs=null;e.task=null;e.st='idle';drawTray()}
+  if(!e.task){let best=null;S.cust.forEach(c=>{if(c&&c.taken&&!c.rs){const p=S.tray.find(p=>!p.rs&&same(c,p));if(p&&(!best||c.left<best.c.left))best={c,p}}});
+   if(best){best.c.rs=1;best.p.rs=1;e.task={type:'pick',c:best.c,p:best.p};e.tx=0;e.st='walk'}
+   else{let c0=null;S.cust.forEach(c=>{if(c&&!c.taken&&!c.rs&&(!c0||c.left<c0.left))c0=c});
+    if(c0){c0.rs=1;e.task={type:'take',c:c0};e.tx=cx(S.cust.indexOf(c0));e.st='walk'}else if(Math.abs(e.x-.05)>.01){e.tx=.05;e.st='walk'}else e.st='idle'}}
+  if(e.st==='walk'){const d=e.tx-e.x,s=SPD[k]*dt;if(Math.abs(d)<=s){e.x=e.tx;const T=e.task;
+    if(!T)e.st='idle';
+    else if(T.type==='pick'){const ix=S.tray.indexOf(T.p);if(ix<0){T.c.rs=null;e.task=null;e.st='idle'}else{S.tray.splice(ix,1);e.carry=T.p;T.type='deliver';e.tx=cx(S.cust.indexOf(T.c));drawTray()}}
+    else if(T.type==='deliver'){pay(S.cust.indexOf(T.c));e.carry=null;e.task=null;e.st='idle'}
+    else{e.st='take';e.tm=TAKE[k]}}
+   else e.x+=Math.sign(d)*s}
+  else if(e.st==='take'){e.tm-=dt;if(e.tm<=0){e.task.c.taken=true;e.task.c.rs=null;e.task=null;e.st='idle';beep(520,.06);drawCust()}}});
+ drawEmps()}
+$('#ings').addEventListener('click',e=>{const b=e.target.closest('button');if(b)add(b.dataset.k)});
+$('#oven').addEventListener('click',e=>{const s=e.target.closest('.slot');if(s&&S.run)ovenTap(+s.dataset.i)});
+$('#spots').addEventListener('click',e=>{const s=e.target.closest('.spot[data-i]');if(s&&S.run)toast('Tu empleado entrega los pedidos')});
+$('#bake').onclick=bake;$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&S.run){S.bi=+b.dataset.i;drawBoard()}});
+$('#trash').onclick=()=>{if(S.run&&S.board){const f=S.board.f;S.board=null;drawBoard();pen((f?1570:740)/2,'A la basura 🗑️')}};
+$('#size').onclick=()=>{if(!S.run)return;if(UP.sp>=5)return toast('Tu ayudante elige el tamaño');S.size=S.size==='M'?'F':'M';if(S.board)S.board.f=S.size==='F';drawBoard()};
+(async()=>{try{DB=await claude.use('db');USR=await claude.use('user');UID=USR?await USR.id():null;pub()}catch(e){}})();reset(LV);intro();
+})();
+</script>
+</body>
+</html>
